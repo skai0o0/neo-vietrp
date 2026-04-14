@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { SlotReel } from "@/lib/mockCharaData";
 import { DEFAULT_SLOT_REELS } from "@/lib/mockCharaData";
 import { ArrowRight } from "lucide-react";
 import { GlassButton } from "@/components/ui/GlassEffect";
+import SlotReelCarousel, { SlotReelRef } from "./SlotReelCarousel";
 
 interface Props {
   customReels?: SlotReel[];
@@ -26,10 +27,33 @@ export default function StepScenario({
   onBack,
 }: Props) {
   const reels = customReels || DEFAULT_SLOT_REELS;
-  const [indices, setIndices] = useState<number[]>(reels.map(() => 0));
+
+  // Use refs to control the carousels for spinning
+  const reelRefs = [
+    useRef<SlotReelRef>(null),
+    useRef<SlotReelRef>(null),
+    useRef<SlotReelRef>(null)
+  ];
+
   const [spinning, setSpinning] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
+
+  // Initialize selected indices
+  const [selectedIndices, setSelectedIndices] = useState<number[]>(reels.map(() => 0));
+
+  const handleCenterChange = useCallback((reelIndex: number, _: string, optionIndex: number) => {
+    setSelectedIndices(prev => {
+      const newIndices = [...prev];
+      newIndices[reelIndex] = optionIndex;
+
+      // Update results immediately when user scrolls manually (if they have spun at least once, or if we want it active always)
+      const newResults = reels.map((r, i) => r.options[newIndices[i]]);
+      onResults(newResults);
+
+      return newIndices;
+    });
+  }, [reels, onResults]);
 
   const spin = useCallback(() => {
     if (spinning) return;
@@ -40,22 +64,20 @@ export default function StepScenario({
       Math.floor(Math.random() * reel.options.length)
     );
 
-    let step = 0;
-    const maxSteps = 14;
-    const interval = setInterval(() => {
-      step++;
-      if (step < maxSteps) {
-        setIndices(reels.map((reel) =>
-          Math.floor(Math.random() * reel.options.length)
-        ));
-      } else {
-        clearInterval(interval);
-        setIndices(finalIndices);
-        onResults(finalIndices.map((idx, i) => reels[i].options[idx]));
-        setTimeout(() => setSpinning(false), 200);
+    // Trigger spin animation on all carousels
+    reelRefs.forEach((ref, i) => {
+      if (ref.current) {
+        // We pass the target index. The carousel component handles adding multiple rotations to make it look like a spin
+        ref.current.spinTo(finalIndices[i]);
       }
-    }, 100);
-  }, [spinning, reels, onResults]);
+    });
+
+    // Wait for the animation to finish before enabling the button again
+    setTimeout(() => {
+      setSpinning(false);
+      onResults(finalIndices.map((idx, i) => reels[i].options[idx]));
+    }, 2500); // Adjust this timeout based on how long the spin animation takes in SlotReelCarousel
+  }, [spinning, reels, onResults, reelRefs]);
 
   const inputClass = `
     w-full px-4 py-2.5 rounded-xl text-sm
@@ -66,13 +88,13 @@ export default function StepScenario({
     transition-all duration-300
   `;
 
-  const canProceed = hasSpun || customScenario.trim().length > 0;
+  const canProceed = hasSpun || customScenario.trim().length > 0 || selectedIndices.some(i => i > 0);
 
   return (
     <div className="flex flex-col h-full">
       <div className="mb-6">
         <h2 className="text-lg font-semibold">Tạo bối cảnh</h2>
-        <p className="text-xs text-text-muted mt-0.5">Gạt cần xèng để tạo ngẫu nhiên</p>
+        <p className="text-xs text-text-muted mt-0.5">Cuộn để chọn tự do hoặc gạt cần xèng để tạo ngẫu nhiên</p>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center">
@@ -87,35 +109,33 @@ export default function StepScenario({
             ))}
           </div>
 
-          {/* Reel windows */}
+          {/* Reel windows - Updated for Scrollable UI */}
           <div className="grid grid-cols-3 gap-3 mb-5">
             {reels.map((reel, i) => (
               <div
                 key={reel.id}
                 className="
-                  h-12 rounded-lg overflow-hidden
+                  h-[150px] rounded-lg overflow-hidden
                   border border-border-default bg-bg-primary
-                  flex items-center justify-center px-2
                   relative
                 "
               >
-                {/* Top/bottom accent lines */}
-                <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent-cyan/20 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-accent-purple/20 to-transparent" />
+                {/* Center highlight box */}
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[40px] bg-white/5 border-y border-white/10 pointer-events-none z-10 box-border" />
 
-                <span
-                  className={`
-                    text-[11px] text-center leading-tight transition-all duration-150
-                    ${spinning
-                      ? "text-text-muted opacity-60"
-                      : hasSpun
-                        ? "text-accent-cyan font-medium"
-                        : "text-text-muted"
-                    }
-                  `}
-                >
-                  {reel.options[indices[i]]}
-                </span>
+                {/* Top/bottom accent lines */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-cyan/40 to-transparent z-20" />
+                <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent-purple/40 to-transparent z-20" />
+
+                <SlotReelCarousel
+                  ref={reelRefs[i]}
+                  items={reel.options.map((opt, idx) => ({ id: `${reel.id}-${idx}`, content: <span className="text-[11px] text-center leading-tight px-1">{opt}</span> }))}
+                  activeHeight={150}
+                  itemHeight={40}
+                  onCenterChange={(id, idx) => handleCenterChange(i, id, idx)}
+                  spinning={spinning}
+                  className="w-full h-full"
+                />
               </div>
             ))}
           </div>
@@ -134,11 +154,11 @@ export default function StepScenario({
               }
             `}
           >
-            {spinning ? "Đang quay..." : hasSpun ? "Quay lại" : "Gạt cần"}
+            {spinning ? "Đang quay..." : (hasSpun || selectedIndices.some(i => i > 0)) ? "Quay lại" : "Gạt cần"}
           </button>
 
           {/* Results */}
-          {hasSpun && !spinning && (
+          {(hasSpun || selectedIndices.some(i => i > 0)) && !spinning && (
             <div className="mt-4 pt-3 border-t border-border-default page-enter">
               <div className="flex flex-wrap gap-1.5">
                 {results.map((r, i) => (
