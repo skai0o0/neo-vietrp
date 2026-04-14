@@ -77,10 +77,16 @@ export default function UniversalCreatePage() {
     setSelectedChar(char);
     if (franchise !== undefined) setSelectedFranchise(franchise);
     // Track whether user picked the OC card (char===null but franchise set)
-    setOcSelected(franchise !== null && char === null);
+    const isNowOC = franchise !== null && char === null;
+    setOcSelected(isNowOC);
+
     if (char) {
       setTraits(char.baseTraits);
       setAppearance(char.baseAppearance);
+      setNickname("");
+    } else if (isNowOC) {
+      setTraits({ kindness: 50, aggression: 50, intelligence: 50, humor: 50, mystery: 50, romance: 50 });
+      setAppearance({ height: 50, build: 50, charm: 50, age: 50 });
       setNickname("");
     }
   }, []);
@@ -254,7 +260,7 @@ export default function UniversalCreatePage() {
                       <GlassButton
                         className="flex-1 flex items-center justify-center gap-2 py-3"
                         onClick={handleGenerate}
-                        disabled={generating}
+                        disabled={generating || !pronoun}
                       >
                         {generating ? (
                           <>

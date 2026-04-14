@@ -230,6 +230,7 @@ export function buildCreateAIPayload(params: {
   behaviours: string[];
   creatorNote: string;
   customReelsApplied: boolean;
+  selectedCharacterHasCustomSlots: boolean;
 }): CreateAICharacterPayload {
   const scenarioSource = params.customScenario.trim()
     ? (params.slotResults.length > 0 ? "mixed" : "custom")
@@ -264,7 +265,7 @@ export function buildCreateAIPayload(params: {
     },
     generatedFrom: {
       customReelsApplied: params.customReelsApplied,
-      selectedCharacterHasCustomSlots: params.customReelsApplied,
+      selectedCharacterHasCustomSlots: params.selectedCharacterHasCustomSlots,
     },
   };
 }
