@@ -1,0 +1,31 @@
+└── Backend
+    ├── API Gateway / Router
+    ├── Services (Core Logic)
+    │   ├── Auth Service 
+    │   ├── User Service 
+    │   ├── Card Service 
+    │   ├── Chat Service 
+    │   └── World Service 
+    ├── AI / LLM Engine (Trái tim của hệ thống - NÂNG CẤP MẠNH)
+    │   ├── Context Orchestrator: Nhạc trưởng gom toàn bộ data để build Prompt
+    │   │   ├── User Persona Injector: Kéo thẻ Persona của user (ngoại hình, kinks, limits) chèn vào prompt.
+    │   │   ├── Example Dialogue Loader: Rút trích 3-5 cặp MesExamples (few-shot) sát ngữ cảnh nhất để LLM học style.
+    │   │   ├── Dynamic State Injector: Chèn các biến số thực tại (Scene, Mood, Arousal level, Relationship stats).
+    │   │   ├── AN (Author's Note) Controller: Bơm AN động theo frequency (VD: mỗi 5 turn) vào top/bottom/in-chat.
+    │   │   └── Post-History Formatter: Chốt hạ các lệnh cưỡng chế (Style guide, rules) ở dòng cuối cùng trước khi LLM gen.
+    │   ├── RAG Engine (Truy xuất dữ liệu Vector)
+    │   │   ├── Memory Retriever: Lọc Past chat summaries để làm long-term memory.
+    │   │   ├── Lorebook Retriever: Kéo thông tin thế giới, nhân vật phụ.
+    │   │   └── VN Linguistic Pack Retriever: Kéo bộ từ vựng, slang, onomatopoeia tiếng Việt chuẩn theo hành động hiện tại.
+    │   ├── Model Gateway: Phân phối request tới API (OpenAI/Anthropic) hoặc Local LLM.
+    │   ├── Tokenizer & Pruner: Đếm token và tự động cắt tỉa context cũ để không bị tràn vỡ memory.
+    │   └── Streamer: Trả text real-time về Frontend.
+    ├── Database (Cơ sở dữ liệu)
+    │   ├── Relational/NoSQL (PostgreSQL/MongoDB): Lưu Users, Cards, Personas, System Prompts.
+    │   ├── Vector DB (ChromaDB / Qdrant / Pinecone): 
+    │   │   ├── Vectorized Lorebooks
+    │   │   ├── Long-term Memory (Chat summaries embeddings)
+    │   │   └── VN NSFW Linguistic Pack (Embeddings của các phrase, slang, sound effects).
+    │   └── Graph/Tree DB (Neo4j hoặc JSON tree trong PostgreSQL): Lưu cấu trúc rẽ nhánh (Branching).
+    ├── Storage (S3 / R2)
+    └── Admin & Cronjobs

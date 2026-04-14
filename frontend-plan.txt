@@ -1,0 +1,68 @@
+VietRP
+├── Frontend
+│   ├── User-side
+│   │   ├── Homepage (Navbar): Trang chủ index của website
+│   │   │   ├── Heading: Tiêu đề/Tiêu ngữ
+│   │   │   ├── Hero Banner: Key Visual của website/event trên web
+│   │   │   ├── Notification Bar: Thanh thông báo tin tức cho user
+│   │   │   ├── Card Leaderboard: BXH Card Xu hướng/Yêu thích/Toàn thời gian
+│   │   │   └── Card list: Danh sách card theo bảng
+│   │   ├── Chat Page (Navbar): Nút truy cập giao diện chat
+│   │   │   ├── Chat List: Danh sách các đoạn chat, hiện trên cùng
+│   │   │   └── Chat Page: Giao diện chat với từng card
+│   │   │       ├── Chat top bar: thanh công cụ + hiển thị card đang chat
+│   │   │       │   ├── Chat List Reveal: Quay lại Chat List
+│   │   │       │   ├── Card Display: Hiển thị card
+│   │   │       │   │   ├── Card's Avatar:
+│   │   │       │   │   ├── Card's Name
+│   │   │       │   │   └── Card's Description
+│   │   │       │   ├── Role Badge: Hiển thị Gói subscription/role gồm mod/op/admin
+│   │   │       │   ├── Create new chat: Tạo chat mới với card hiện tại
+│   │   │       │   ├── Search a message: Tìm lại tin nhắn
+│   │   │       │   └── Open side bar: Mở side bar (Cân nhắc đổi vuốt lên)
+│   │   │       │       ├── Reply style: Chọn phong cách trả lời của card
+│   │   │       │       ├── Scenario customize: Tuỳ chỉnh tình huống card
+│   │   │       │       ├── First Message customize: Tuỳ chỉnh tin nhắn đầu của card
+│   │   │       │       ├── AI Model: Thay đổi model AI nhanh ngay trong chat
+│   │   │       │       └── Max lenght: Độ dài AI phản hồi
+│   │   │       ├── Chat Content: Nội dung đoạn chat
+│   │   │       │   ├── User Chat bubble: Hiển thị nội dung chat của user
+│   │   │       │   │   ├── Copy
+│   │   │       │   │   ├── Edit
+│   │   │       │   │   ├── Delete
+│   │   │       │   │   └── Branch
+│   │   │       │   └── Assistant Chat bubble: Hiển thị nội dung chat của assistant
+│   │   │       │       ├── Copy
+│   │   │       │       ├── Regen (New)
+│   │   │       │       ├── Delete
+│   │   │       │       └── Branch
+│   │   │       └── Chat Input
+│   │   │           ├── Text area
+│   │   │           └── Chat Submit
+│   │   ├── Create Page
+│   │   │   ├── Custom
+│   │   │   │   ├── Cards: Tavern Spec V2 
+│   │   │   │   ├── Lorebooks
+│   │   │   │   └── Worlds
+│   │   │   └── AI Charagen
+│   │   │       ├── Cards: Tavern Spec V2
+│   │   │       ├── Lorebooks
+│   │   │       └── Worlds
+│   │   ├── Settings: Tuỳ chỉnh trải nghiệm roleplay
+│   │   │   ├── Manage Subscriptions: Quản lý các gói đăng ký
+│   │   │   ├── Themes: Thay đổi giao diện
+│   │   │   ├── Safe mode (replaced for NSFW Mode)
+│   │   │   ├── Online mode: Online/Offline/Invisible hiển thị trên web
+│   │   │   └── Personas: Quản lý các nhân cách khi chat với AI
+│   │   │       ├── Name: Tên AI gọi khi chat
+│   │   │       ├── Gender: Giới tính
+│   │   │       ├── Sexual Orientation: Xu hướng tính dục
+│   │   │       └── Description: Mô tả nhân cách
+│   │   └── Profile: Quản lý hồ sơ của user xuất hiện trên web
+│   │       ├── Username: Dùng cho server side
+│   │       ├── Display name: Tên hiển thị dùng cho đua top
+│   │       └── Description: Mô tả bản thân
+│   └── Admin-side
+│       ├── Admin Hub
+│       └── Markdown
+└── Backend
