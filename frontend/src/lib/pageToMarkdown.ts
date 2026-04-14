@@ -75,22 +75,25 @@ function blockFromElement(el: Element, depth = 0): string {
 
   if (tag === "UL") {
     let md = "";
-    let i = 0;
-    for (const li of el.querySelectorAll(":scope > li")) {
-      const line = escapeInline(collectInline(li as Element));
-      if (line) md += `- ${line}\n`;
-      i++;
+    for (const child of el.children) {
+      if (child.tagName === "LI") {
+        const line = escapeInline(collectInline(child as Element));
+        if (line) md += `- ${line}\n`;
+      }
     }
     return md ? `${md}\n` : "";
   }
 
   if (tag === "OL") {
     let md = "";
-    const items = el.querySelectorAll(":scope > li");
-    items.forEach((li, idx) => {
-      const line = escapeInline(collectInline(li as Element));
-      if (line) md += `${idx + 1}. ${line}\n`;
-    });
+    let idx = 0;
+    for (const child of el.children) {
+      if (child.tagName === "LI") {
+        const line = escapeInline(collectInline(child as Element));
+        if (line) md += `${idx + 1}. ${line}\n`;
+        idx++;
+      }
+    }
     return md ? `${md}\n` : "";
   }
 
